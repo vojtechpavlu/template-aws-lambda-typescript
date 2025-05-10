@@ -24,7 +24,7 @@ fs.readdir(handlersDirectory, (err, files) => {
       platform: 'node',
       target: 'node20',
       format: 'cjs',
-      outfile: `dist/${absoluteHandlerFile.split('/').pop().replace('.ts', '.cjs')}`,
+      outfile: `dist/${absoluteHandlerFile.split('/').pop().replace(/\.ts$/, '.cjs')}`,
       minify: true,
       treeShaking: true,
       sourcemap: false,
