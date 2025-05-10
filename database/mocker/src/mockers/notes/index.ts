@@ -1,4 +1,5 @@
 import { Mocker } from '../model';
+import { allNotes } from './all-notes';
 import { notesData } from './note-data';
 
 const tableName = 'notes-table';
@@ -57,5 +58,5 @@ export const notesDataMocker: Mocker = {
       },
     ],
   },
-  items: [...notesData,],
+  items: [...notesData, ...allNotes],
 };

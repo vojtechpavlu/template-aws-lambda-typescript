@@ -23,9 +23,9 @@ fs.readdir(handlersDirectory, (err, files) => {
       bundle: true,
       platform: 'node',
       target: 'node20',
-      format: 'esm',
-      outfile: `dist/${absoluteHandlerFile.split('/').pop().replace('.ts', '.mjs')}`,
-      minify: false,
+      format: 'cjs',
+      outfile: `dist/${absoluteHandlerFile.split('/').pop().replace('.ts', '.cjs')}`,
+      minify: true,
       treeShaking: true,
       sourcemap: false,
     });

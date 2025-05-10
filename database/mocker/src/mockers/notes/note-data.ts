@@ -18,7 +18,7 @@ export const notesData = [
     modifiedAt: new Date().toISOString(),
   },
   {
-    PK: 'NOTE#ab52fe7bac0f1d4e',
+    PK: 'NOTE#f3da2fe7bc0f1d4e',
     SK: 'DATA',
     name: 'My First Note',
     description: 'This is a sample note.',

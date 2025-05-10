@@ -9,7 +9,7 @@ import pluginJest from 'eslint-plugin-jest';
 
 export default [
   // Ignore all JavaScript files globally
-  { ignores: ['**/*.js'] },
+  { ignores: ['**/*.js', '**/*.cjs'] },
 
   // Include TypeScript files only
   { files: ['**/*.ts'] },
