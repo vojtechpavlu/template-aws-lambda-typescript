@@ -1,0 +1,20 @@
+{
+  "name": "mocker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsx ./src/index.ts"
+  },
+  "author": "vojtechpavlu",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "tsx": "^4.19.3",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.620.0",
+    "@aws-sdk/lib-dynamodb": "^3.620.0"
+  }
+}

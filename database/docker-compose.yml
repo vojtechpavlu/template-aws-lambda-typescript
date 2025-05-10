@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  dynamodb-local:
+    user: root
+    command: '-jar DynamoDBLocal.jar -sharedDb -dbPath ./data'
+    image: 'amazon/dynamodb-local:latest'
+    container_name: dynamodb-local
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -v http://localhost:8000']
+      interval: 1s
+      timeout: 10s
+      retries: 5
+    ports:
+      - '8000:8000'
+    volumes:
+      - './storage:/home/dynamodblocal/data'
+    working_dir: /home/dynamodblocal
+
+  mocker:
+    build:
+      context: mocker
+    depends_on:
+      dynamodb-local:
+        condition: service_healthy
+    links:
+      - dynamodb-local
+    environment:
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
