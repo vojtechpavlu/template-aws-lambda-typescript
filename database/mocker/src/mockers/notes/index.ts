@@ -1,10 +1,9 @@
 import { Mocker } from '../model';
-import { applicationData } from './application-data';
-import { developerData } from './developer-data';
+import { notesData } from './note-data';
 
-const tableName = 'mock-table';
+const tableName = 'notes-table';
 
-export const developerDataMocker: Mocker = {
+export const notesDataMocker: Mocker = {
   tableName: tableName,
   tableParameters: {
     TableName: tableName,
@@ -29,7 +28,7 @@ export const developerDataMocker: Mocker = {
         AttributeType: 'S',
       },
       {
-        AttributeName: 'email',
+        AttributeName: 'owner',
         AttributeType: 'S',
       },
     ],
@@ -41,10 +40,10 @@ export const developerDataMocker: Mocker = {
 
     GlobalSecondaryIndexes: [
       {
-        IndexName: 'email-index',
+        IndexName: 'owner-index',
         KeySchema: [
           {
-            AttributeName: 'email',
+            AttributeName: 'owner',
             KeyType: 'HASH',
           },
         ],
@@ -58,5 +57,5 @@ export const developerDataMocker: Mocker = {
       },
     ],
   },
-  items: [...developerData, ...applicationData],
+  items: [...notesData,],
 };
