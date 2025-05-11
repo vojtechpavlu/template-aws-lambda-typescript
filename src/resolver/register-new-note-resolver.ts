@@ -1,22 +1,33 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { ValidationError } from '../error';
-import { registerNewNote } from '../service';
-import { INotesDataRepository } from '../repository';
+import { registerNewNote, registerNoteId } from '../service';
+import { IAllNotesRepository, INotesDataRepository } from '../repository';
 import { IdentifierGenerationConfig } from '../util';
 
 export const registerNewNoteResolver = async (
   item: Record<string, unknown>,
   notesDataRepository: INotesDataRepository,
+  allNotesRepository: IAllNotesRepository,
   identifierConfig: IdentifierGenerationConfig
 ): Promise<APIGatewayProxyResult> => {
   try {
     // Try to register a new note
-    await registerNewNote(item, notesDataRepository, identifierConfig);
+    const noteId = await registerNewNote(
+      item,
+      notesDataRepository,
+      identifierConfig
+    );
+
+    // Register note ID as a pre-indexed field
+    await registerNoteId(noteId, allNotesRepository);
 
     // When it's successfully registered, return a success message
     return {
       statusCode: 201,
-      body: JSON.stringify({ message: 'Note registered successfully' }),
+      body: JSON.stringify({
+        message: 'Note registered successfully',
+        noteId,
+      }),
     };
   } catch (error) {
     // Log the error for debugging purposes

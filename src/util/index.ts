@@ -7,3 +7,5 @@ export {
   generateRandomString,
   generateUniqueIdentifier,
 } from './identifier';
+
+export { parseZodError } from './zod-error-parser';

@@ -1,7 +1,11 @@
-import { NotFoundError, ValidationError } from '../error';
-import { INotesDataRepository } from '../repository';
+import { DuplicationError, NotFoundError, ValidationError } from '../error';
+import { IAllNotesRepository, INotesDataRepository } from '../repository';
 import { Note, NoteInputSchema } from '../model';
-import { generateUniqueIdentifier, IdentifierGenerationConfig } from '../util';
+import {
+  generateUniqueIdentifier,
+  IdentifierGenerationConfig,
+  parseZodError,
+} from '../util';
 
 /**
  * Returns a note by its ID.
@@ -20,7 +24,7 @@ export const getNoteById = async (
   const foundNote = await notesDataRepository.getNoteById(noteId);
 
   if (!foundNote) {
-    throw new NotFoundError(`Note with ID ${noteId} not found`);
+    throw new NotFoundError(`Note with ID '${noteId}' not found`);
   }
 
   return foundNote;
@@ -50,6 +54,66 @@ export const getNotesByOwner = async (
 };
 
 /**
+ * Returns all note IDs from the repository.
+ *
+ * @param {IAllNotesRepository} allNotesRepository The repository to be used to fetch the note IDs
+ *
+ * @returns {Promise<string[]>} An array of all note IDs
+ *
+ * @throws {NotFoundError} If no notes are found
+ */
+export const getAllNoteIds = async (
+  allNotesRepository: IAllNotesRepository
+) => {
+  const noteIds = await allNotesRepository.getAllNoteIds();
+
+  if (!noteIds || noteIds.length === 0) {
+    throw new NotFoundError(`No registered notes found`);
+  }
+
+  return noteIds;
+};
+
+/**
+ * Returns whether there is a pre-indexed note.
+ *
+ * @param {string} noteId ID of the note to be checked
+ * @param {IAllNotesRepository} allNotesRepository The repository to be used to check the note
+ *
+ * @returns {Promise<boolean>} True if the note exists, false otherwise
+ */
+export const hasIndexedNoteWithId = async (
+  noteId: string,
+  allNotesRepository: IAllNotesRepository
+): Promise<boolean> => {
+  return allNotesRepository.hasNoteWithId(noteId);
+};
+
+/**
+ * Registers a new note ID in the repository.
+ *
+ * @param {string} noteId ID of the note to be registered
+ * @param {IAllNotesRepository} allNotesRepository The repository to be used to register the note ID
+ *
+ * @returns {Promise<void>} A promise that resolves when the note ID is registered
+ *
+ * @throws {DuplicationError} If the note ID already exists
+ */
+export const registerNoteId = async (
+  noteId: string,
+  allNotesRepository: IAllNotesRepository
+): Promise<void> => {
+  // Check if the note ID already exists
+  const noteExists = await allNotesRepository.hasNoteWithId(noteId);
+  if (noteExists) {
+    throw new DuplicationError(`Note ID ${noteId} already exists`);
+  }
+
+  // Register the note ID
+  return allNotesRepository.registerNoteId(noteId);
+};
+
+/**
  * Checks whether a note with the given ID exists in the repository.
  *
  * @param {string} noteId ID of the note to be checked
@@ -66,12 +130,12 @@ export const hasNoteWithId = async (
 
 /**
  * Registers a new note in the repository.
- * 
+ *
  * @param {Record<string, unknown>} item The note data to be registered
  * @param {INotesDataRepository} notesDataRepository The repository to be used to register the note
  * @param {IdentifierGenerationConfig} identifierConfig Configuration for generating unique identifiers
- * 
- * @returns {Promise<void>} A promise that resolves when the note is registered
+ *
+ * @returns {Promise<string>} The ID of the newly registered note
  * 
  * @throws {Error} When the note ID could not be generated or the note data is invalid
  * @throws {ValidationError} If the note data is invalid
@@ -80,35 +144,38 @@ export const registerNewNote = async (
   item: Record<string, unknown>,
   notesDataRepository: INotesDataRepository,
   identifierConfig: IdentifierGenerationConfig
-): Promise<void> => {
-
+): Promise<string> => {
   let parsedInput;
 
   try {
     // Verify and parse the given input
     parsedInput = NoteInputSchema.parse(item);
   } catch (error) {
-    throw new ValidationError(`Invalid note data: ${error}`);
+    const issues = parseZodError(error);
+    throw new ValidationError(`Invalid note data: ${JSON.stringify(issues)}`);
   }
 
   // Generate a new unique note ID
   const uniqueIdentifier = await generateUniqueIdentifier(
     identifierConfig,
-    (identifier) => hasNoteWithId(identifier, notesDataRepository)
+    async (identifier) =>
+      !(await hasNoteWithId(identifier, notesDataRepository))
   );
 
   // Insert the parsed input into the repository
-  return notesDataRepository.putNote(uniqueIdentifier, parsedInput);
+  await notesDataRepository.putNote(uniqueIdentifier, parsedInput);
+
+  return uniqueIdentifier;
 };
 
 /**
  * Updates an existing note in the repository.
- * 
+ *
  * @param {string} noteId ID of the note to be updated
  * @param {Record<string, unknown>} item The new note data
  * @param {INotesDataRepository} notesDataRepository The repository to be used to update the note
- * 
- * @returns {Promise<void>} A promise that resolves when the note is updated
+ *
+ * @returns {Promise<string>} The ID of the updated note
  * 
  * @throws {NotFoundError} If no note with the given ID is found
  * @throws {ValidationError} If the note data is invalid
@@ -117,15 +184,15 @@ export const updateNote = async (
   noteId: string,
   item: Record<string, unknown>,
   notesDataRepository: INotesDataRepository
-): Promise<void> => {
-
+): Promise<string> => {
   let parsedInput;
 
   try {
     // Verify and parse the given input
     parsedInput = NoteInputSchema.parse(item);
   } catch (error) {
-    throw new ValidationError(`Invalid note data: ${error}`);
+    const issues = parseZodError(error);
+    throw new ValidationError(`Invalid note data: ${JSON.stringify(issues)}`);
   }
 
   // Verify the note exists
@@ -135,8 +202,10 @@ export const updateNote = async (
   }
 
   // Update the note in the repository
-  return notesDataRepository.putNote(noteId, parsedInput);
-}
+  await notesDataRepository.putNote(noteId, parsedInput);
+
+  return noteId;
+};
 
 /**
  * Deletes a note from the repository
