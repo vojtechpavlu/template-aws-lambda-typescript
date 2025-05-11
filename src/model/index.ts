@@ -1,1 +1,6 @@
-export { type Note, type NoteInput, NoteSchema, NoteInputSchema } from './note';
+export {
+  type Note,
+  type NoteInput,
+  NoteSchema,
+  NoteInputSchema,
+} from './note';
