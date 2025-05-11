@@ -136,7 +136,7 @@ export const hasNoteWithId = async (
  * @param {IdentifierGenerationConfig} identifierConfig Configuration for generating unique identifiers
  *
  * @returns {Promise<string>} The ID of the newly registered note
- * 
+ *
  * @throws {Error} When the note ID could not be generated or the note data is invalid
  * @throws {ValidationError} If the note data is invalid
  */
@@ -176,7 +176,7 @@ export const registerNewNote = async (
  * @param {INotesDataRepository} notesDataRepository The repository to be used to update the note
  *
  * @returns {Promise<string>} The ID of the updated note
- * 
+ *
  * @throws {NotFoundError} If no note with the given ID is found
  * @throws {ValidationError} If the note data is invalid
  */
@@ -185,20 +185,19 @@ export const updateNote = async (
   item: Record<string, unknown>,
   notesDataRepository: INotesDataRepository
 ): Promise<string> => {
+  const note = await notesDataRepository.getNoteById(noteId);
+  if (!note) {
+    throw new NotFoundError(`Note with ID ${noteId} not found`);
+  }
+
   let parsedInput;
 
   try {
     // Verify and parse the given input
-    parsedInput = NoteInputSchema.parse(item);
+    parsedInput = NoteInputSchema.parse({ ...item, noteId, owner: note.owner });
   } catch (error) {
     const issues = parseZodError(error);
     throw new ValidationError(`Invalid note data: ${JSON.stringify(issues)}`);
-  }
-
-  // Verify the note exists
-  const noteExists = await hasNoteWithId(noteId, notesDataRepository);
-  if (!noteExists) {
-    throw new NotFoundError(`Note with ID ${noteId} not found`);
   }
 
   // Update the note in the repository

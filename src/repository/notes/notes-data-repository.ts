@@ -62,7 +62,7 @@ export class NotesDataRepository
       .query({ index: 'owner-index', partition: owner })
       .send();
 
-    // If no items are found, log a message and return an empty array 
+    // If no items are found, log a message and return an empty array
     if (!Items || Items.length === 0) {
       console.debug(`No notes found for owner ${owner}`);
       return [];
