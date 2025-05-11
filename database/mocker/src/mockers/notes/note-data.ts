@@ -20,7 +20,7 @@ export const notesData = [
   {
     PK: 'NOTE#f3da2fe7bc0f1d4e',
     SK: 'DATA',
-    name: 'My First Note',
+    title: 'My First Note',
     description: 'This is a sample note.',
     owner: 'd22a530e51995d52',
     createdAt: '2021-09-29T12:00:00.000Z',
