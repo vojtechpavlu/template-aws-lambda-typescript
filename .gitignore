@@ -7,7 +7,7 @@ artifact.zip
 node_modules
 
 # Coverage reports
-.coverage
+.coverage-*
 
 # Database data
 database/storage

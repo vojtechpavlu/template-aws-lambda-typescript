@@ -1,3 +1,4 @@
+export { getResponseHeaders } from './response-headers';
 export { environmentVariable } from './environment';
 
 export {

@@ -2,6 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import { INotesDataRepository } from '../repository';
 import { NotFoundError } from '../error';
 import { getNotesByOwner } from '../service/notes-service';
+import { getResponseHeaders } from '../util';
 
 export const getNotesByOwnerResolver = async (
   owner: string,
@@ -14,6 +15,7 @@ export const getNotesByOwnerResolver = async (
     // When it's successfully found, return the note
     return {
       statusCode: 200,
+      headers: getResponseHeaders(),
       body: JSON.stringify(foundNotes),
     };
   } catch (error) {
@@ -24,6 +26,7 @@ export const getNotesByOwnerResolver = async (
     if (error instanceof NotFoundError) {
       return {
         statusCode: 404,
+        headers: getResponseHeaders(),
         body: JSON.stringify({
           message: `No note having owner '${owner}' found`,
         }),
@@ -33,6 +36,7 @@ export const getNotesByOwnerResolver = async (
     // Handle any other error as 500 Internal Server Error (Unknown cause)
     return {
       statusCode: 500,
+      headers: getResponseHeaders(),
       body: JSON.stringify({ message: 'Internal Server Error' }),
     };
   }

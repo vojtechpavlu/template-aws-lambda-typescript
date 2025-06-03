@@ -1,5 +1,8 @@
 {
   "name": "aws-lambda-typescript",
+  "description": "This is a template project for AWS Lambda functions written in TypeScript with bunch of useful tooling.",
+  "author": "vojtechpavlu",
+  "license": "MIT",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -7,18 +10,19 @@
     "clear:deps": "rimraf ./node_modules",
     "clear:dist": "rimraf ./dist",
     "clear:artifact": "rimraf ./artifact && rimraf ./artifact.zip",
+    "db:restart": "docker-compose -f ./database/docker-compose.local.yml down && docker-compose -f ./database/docker-compose.local.yml up --build",
     "compile": "npm run clear:dist && node compile.js",
     "package": "npm run clear:artifact && mkdir artifact && cp dist/* artifact/ && cd artifact && zip -r ../artifact.zip .",
-    "db:restart": "docker-compose -f ./database/docker-compose.local.yml down && docker-compose -f ./database/docker-compose.local.yml up --build",
     "format": "npx prettier . --write",
     "test:format": "npx prettier . --check",
     "test:lint": "eslint .",
+    "test:repository": "jest --config=jest.repository.config.js",
+    "test:repository:coverage": "jest --coverage --config=jest.repository.config.js --coverageDirectory=.coverage-repository",
+    "test:resolver": "jest --config=jest.resolver.config.js",
+    "test:resolver:coverage": "jest --coverage --config=jest.resolver.config.js --coverageDirectory=.coverage-resolver",
     "test:unit": "jest --config=jest.unit.config.js",
-    "test:unit:coverage": "jest --coverage --config=jest.unit.config.js --coverageDirectory=.coverage"
+    "test:unit:coverage": "jest --coverage --config=jest.unit.config.js --coverageDirectory=.coverage-unit"
   },
-  "author": "vojtechpavlu",
-  "license": "MIT",
-  "description": "",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.148",
     "@types/jest": "^29.5.14",

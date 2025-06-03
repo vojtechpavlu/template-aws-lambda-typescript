@@ -2,6 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import { INotesDataRepository } from '../repository';
 import { updateNote } from '../service';
 import { NotFoundError, ValidationError } from '../error';
+import { getResponseHeaders } from '../util';
 
 export const updateNoteResolver = async (
   noteId: string,
@@ -12,6 +13,7 @@ export const updateNoteResolver = async (
     await updateNote(noteId, item, notesDataRepository);
     return {
       statusCode: 200,
+      headers: getResponseHeaders(),
       body: JSON.stringify({
         message: 'Note updated successfully',
         noteId,
@@ -24,6 +26,7 @@ export const updateNoteResolver = async (
     if (error instanceof ValidationError) {
       return {
         statusCode: 400,
+        headers: getResponseHeaders(),
         body: JSON.stringify({
           message: 'Invalid note data',
           error: error.message,
@@ -35,6 +38,7 @@ export const updateNoteResolver = async (
     if (error instanceof NotFoundError) {
       return {
         statusCode: 404,
+        headers: getResponseHeaders(),
         body: JSON.stringify({
           message: 'Note not found',
           noteId,
@@ -45,6 +49,7 @@ export const updateNoteResolver = async (
     // Otherwise, return 500 Internal Server Error
     return {
       statusCode: 500,
+      headers: getResponseHeaders(),
       body: JSON.stringify({ message: 'Internal Server Error' }),
     };
   }

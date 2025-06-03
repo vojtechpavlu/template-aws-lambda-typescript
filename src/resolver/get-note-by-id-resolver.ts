@@ -2,6 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import { INotesDataRepository } from '../repository';
 import { getNoteById } from '../service';
 import { NotFoundError } from '../error';
+import { getResponseHeaders } from '../util';
 
 export const getNoteByIdResolver = async (
   noteId: string,
@@ -14,6 +15,7 @@ export const getNoteByIdResolver = async (
     // When it's successfully found, return the note
     return {
       statusCode: 200,
+      headers: getResponseHeaders(),
       body: JSON.stringify(foundNote),
     };
   } catch (error) {
@@ -24,6 +26,7 @@ export const getNoteByIdResolver = async (
     if (error instanceof NotFoundError) {
       return {
         statusCode: 404,
+        headers: getResponseHeaders(),
         body: JSON.stringify({ message: `No note with ID '${noteId}' found` }),
       };
     }
@@ -31,6 +34,7 @@ export const getNoteByIdResolver = async (
     // Handle any other error as 500 Internal Server Error (Unknown cause)
     return {
       statusCode: 500,
+      headers: getResponseHeaders(),
       body: JSON.stringify({ message: 'Internal Server Error' }),
     };
   }

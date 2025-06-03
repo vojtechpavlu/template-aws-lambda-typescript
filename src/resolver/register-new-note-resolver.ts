@@ -2,7 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import { ValidationError } from '../error';
 import { registerNewNote, registerNoteId } from '../service';
 import { IAllNotesRepository, INotesDataRepository } from '../repository';
-import { IdentifierGenerationConfig } from '../util';
+import { getResponseHeaders, IdentifierGenerationConfig } from '../util';
 
 export const registerNewNoteResolver = async (
   item: Record<string, unknown>,
@@ -24,6 +24,7 @@ export const registerNewNoteResolver = async (
     // When it's successfully registered, return a success message
     return {
       statusCode: 201,
+      headers: getResponseHeaders(),
       body: JSON.stringify({
         message: 'Note registered successfully',
         noteId,
@@ -37,6 +38,7 @@ export const registerNewNoteResolver = async (
     if (error instanceof ValidationError) {
       return {
         statusCode: 400,
+        headers: getResponseHeaders(),
         body: JSON.stringify({ message: error.message }),
       };
     }
@@ -44,6 +46,7 @@ export const registerNewNoteResolver = async (
     // Handle any other error as 500 Internal Server Error (Unknown cause)
     return {
       statusCode: 500,
+      headers: getResponseHeaders(),
       body: JSON.stringify({ message: 'Internal Server Error' }),
     };
   }
