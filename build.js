@@ -17,7 +17,7 @@ fs.readdir(handlersDirectory, (err, files) => {
     console.log(`Building file: ${handlerFile}`);
 
     const absoluteHandlerFile = path.join(handlersDirectory, handlerFile);
-    
+
     esbuild.buildSync({
       entryPoints: [absoluteHandlerFile],
       bundle: true,
@@ -28,6 +28,12 @@ fs.readdir(handlersDirectory, (err, files) => {
       minify: true,
       treeShaking: true,
       sourcemap: false,
+      external: [
+        // Exclude these packages from the bundle since
+        // they already exist in the AWS Lambda environment
+        '@aws-sdk/client-dynamodb',
+        '@aws-sdk/lib-dynamodb',
+      ],
     });
   }
 });
