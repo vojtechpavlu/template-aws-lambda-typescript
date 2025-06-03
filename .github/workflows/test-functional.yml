@@ -1,0 +1,100 @@
+name: Functional tests
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start Unit tests
+        run: npm run test:unit
+
+  repository-tests:
+    name: Repository tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Compose
+        run: sudo apt-get install -y docker-compose
+
+      - name: Start Docker Compose
+        run: docker-compose up -d
+        working-directory: ./database
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Wait for database to be healthy
+        run: |
+          for i in {1..10}; do
+            # When the database is up and running, the status will be "healthy"
+            if docker inspect -f '{{.State.Health.Status}}' dynamodb-local | grep -q 'healthy'; then
+              echo "Database is ready!"
+              exit 0
+            fi
+            echo "Waiting for database to be ready... ($i/10)"
+            sleep 1
+          done
+
+          # After 10 attempts, we'll consider the database unhealthy and
+          # is not about to recover itself either
+          echo "Database did not become healthy in time."
+          exit 1
+
+      - name: Start Repository tests
+        run: npm run test:repository
+
+  resolver-tests:
+    name: Resolver tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start Resolver tests
+        run: npm run test:resolver
