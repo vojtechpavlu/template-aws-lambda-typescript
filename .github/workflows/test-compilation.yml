@@ -1,4 +1,7 @@
 name: Compilation tests
+description: |
+  This workflow runs a dry-run compilation of the project to ensure that the TypeScript code compiles without errors.
+  It is triggered on every push to branches other than `main` (i.e. any feature branch).
 
 on:
   push:
