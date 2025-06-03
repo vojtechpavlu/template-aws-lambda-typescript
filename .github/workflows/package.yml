@@ -1,0 +1,81 @@
+name: Build package
+description: |
+  This workflow builds the package, uploads it to S3 bucket and creates a git tag.
+  It is triggered on pushes to the main branch.
+
+on:
+  # This workflow is meant to be executed on each push to the main branch - i.e. when you decide the feature is finished, (dev-)tested 
+  # and you think ready to be packaged and released to a somewhat live environment (like test or something similar).
+  #
+  # To make it so, comment the `workflow_dispatch` and uncomment the `push` section below.
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+
+env:
+  S3_BUCKET: s3://my-bucket/  # Replace with your actual S3 bucket name
+  MAJOR_VERSION: 1
+  NODE_VERSION: 20
+  
+  # Keep in mind that the AWS credentials are stored in GitHub secrets for security reasons.
+  # Optionally, update the region if you decide to work in a different one. Keep in mind that 
+  # the region must match the one of your S3 bucket.
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: eu-west-1
+
+jobs:
+  package:
+    name: Package
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create version number
+        run: |
+          echo "VERSION=${MAJOR_VERSION}.${RUN_NUMBER}" >> "$GITHUB_ENV"
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
+
+      - name: Create artifact name
+        run: |
+          echo "ARTIFACT=artifact-${VERSION}.zip" >> "$GITHUB_ENV"
+        env:
+          VERSION: ${{ env.VERSION }}
+
+      - name: Compile sources
+        run: |
+          npm run compile
+
+      - name: Pack sources together
+        run: |
+          mkdir -p artifact
+          cp -r dist/* artifact/
+
+      - name: Compress artifact into zip
+        working-directory: ./artifact
+        run: |
+          zip -r ../${{ env.ARTIFACT }} .
+
+      - name: Store artifact in the S3 Bucket
+        run: |
+          aws s3 cp ${{ env.ARTIFACT }} ${{ env.S3_BUCKET }}
+
+      - name: Create Git Tag
+        run: |
+          git tag v${{ env.VERSION }}
+          git push origin v${{ env.VERSION }}
