@@ -1,5 +1,8 @@
 {
   "name": "aws-lambda-typescript",
+  "description": "This is a template project for AWS Lambda functions written in TypeScript with bunch of useful tooling.",
+  "author": "vojtechpavlu",
+  "license": "MIT",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -20,9 +23,6 @@
     "test:unit": "jest --config=jest.unit.config.js",
     "test:unit:coverage": "jest --coverage --config=jest.unit.config.js --coverageDirectory=.coverage-unit"
   },
-  "author": "vojtechpavlu",
-  "license": "MIT",
-  "description": "",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.148",
     "@types/jest": "^29.5.14",
