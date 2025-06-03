@@ -33,9 +33,5 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     };
   }
 
-  return await updateNoteResolver(
-    body.noteId,
-    body,
-    notesDataRepository,
-  );
+  return await updateNoteResolver(body.noteId, body, notesDataRepository);
 };

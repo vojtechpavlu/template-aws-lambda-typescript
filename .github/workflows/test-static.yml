@@ -2,6 +2,7 @@ name: Static tests
 description: |
   This workflow runs static analysis tests such as formatting and linting. This helps 
   ensure code quality and consistency.
+  It is triggered on every push to branches other than `main` (i.e. any feature branch).
 
 on:
   push:
