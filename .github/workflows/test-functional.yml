@@ -1,4 +1,7 @@
 name: Functional tests
+description: |
+  This workflow runs the functional tests of the project, including unit tests, repository tests, and resolver tests.
+  It is triggered on every push to branches other than `main` (i.e. any feature branch).
 
 on:
   push:

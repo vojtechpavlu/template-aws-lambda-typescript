@@ -69,7 +69,7 @@ describe('NotesDataRepository', () => {
         owner: EXISTING_OWNER_ID,
         createdAt: new Date().toISOString(),
         modifiedAt: new Date().toISOString(),
-      }
+      };
 
       // Verify the note does not exist before adding
       const existsBeforeStoring = await repository.hasNoteWithId(note.noteId);
@@ -91,7 +91,7 @@ describe('NotesDataRepository', () => {
       expect(storedNote?.owner).toBe(note.owner);
       expect(storedNote?.createdAt).toBe(note.createdAt);
       expect(storedNote?.modifiedAt).toBe(note.modifiedAt);
-      
+
       // Delete the note
       const deletedNote = await repository.deleteNote(note.noteId);
       expect(deletedNote).toBeDefined();
@@ -150,7 +150,9 @@ describe('NotesDataRepository', () => {
 
       // Clean up by deleting the updated note
       await repository.deleteNote(note.noteId);
-      const existsAfterUpdateDeletion = await repository.hasNoteWithId(note.noteId);
+      const existsAfterUpdateDeletion = await repository.hasNoteWithId(
+        note.noteId
+      );
       expect(existsAfterUpdateDeletion).toBe(false);
     });
   });

@@ -1,6 +1,6 @@
-import { MockNotesDataRepository } from "../__mock/ddb-repository";
-import { getNotesData } from "../__mock/mock-data";
-import { getNoteByIdResolver, INotesDataRepository } from "../src";
+import { MockNotesDataRepository } from '../__mock/ddb-repository';
+import { getNotesData } from '../__mock/mock-data';
+import { getNoteByIdResolver, INotesDataRepository } from '../src';
 
 let mockRepository: INotesDataRepository;
 
