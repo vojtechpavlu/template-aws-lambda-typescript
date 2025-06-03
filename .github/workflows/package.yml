@@ -4,10 +4,10 @@ description: |
   It is triggered on pushes to the main branch.
 
 # Keep in mind that this workflow is pushing something to the GitHub repository (git tag creation at the end), so you need to
-# make sure to allow this kind of operation in the repository settings, otherwise it will be failing. 
+# make sure to allow this kind of operation in the repository settings, otherwise it will be failing.
 
 on:
-  # This workflow is meant to be executed on each push to the main branch - i.e. when you decide the feature is finished, (dev-)tested 
+  # This workflow is meant to be executed on each push to the main branch - i.e. when you decide the feature is finished, (dev-)tested
   # and you think ready to be packaged and released to a somewhat live environment (like test or something similar).
   #
   # To make it so, comment the `workflow_dispatch` and uncomment the `push` section below.
@@ -20,16 +20,16 @@ env:
   # S3 Bucket where all the built artifacts will be stored into. Replace with your actual S3 bucket name.
   S3_BUCKET: s3://my-s3-bucket/
 
-  # This version number will be used as a base for the versioning of the package, like 1.0, 1.1, etc. 
+  # This version number will be used as a base for the versioning of the package, like 1.0, 1.1, etc.
   # The minor version number is a GitHub run number, which is incremented on each run of the workflow.
   MAJOR_VERSION: 1
 
   # The Node.js version to use for the build. Change it when you want to migrate to higher versions of Node
   # in AWS Lambdas - just to be sure.
   NODE_VERSION: 20
-  
+
   # Keep in mind that the AWS credentials are stored in GitHub secrets for security reasons.
-  # Optionally, update the region if you decide to work in a different one. Keep in mind that 
+  # Optionally, update the region if you decide to work in a different one. Keep in mind that
   # the region must match the one of your S3 bucket.
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
