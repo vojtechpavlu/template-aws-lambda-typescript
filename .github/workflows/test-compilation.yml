@@ -1,0 +1,35 @@
+name: Compilation tests
+description: |
+  This workflow runs a dry-run compilation of the project to ensure that the TypeScript code compiles without errors.
+  It is triggered on every push to branches other than `main` (i.e. any feature branch).
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  compilation:
+    name: Compilation
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Dry-run compilation
+        run: npm run compile

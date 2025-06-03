@@ -57,16 +57,16 @@ export const generateRandomString: RandomStringGenerator = (
 /**
  * Generates a unique identifier using the provided configuration
  * and checks its uniqueness using the provided callback function.
- * 
+ *
  * The identifier is generated using the specified generator function
  * and is retried up to the specified maximum number of retries
  * if it is not unique.
- * 
+ *
  * @param {IdentifierGenerationConfig} config Configuration object for generating the identifier.
  * @param {UniquenessCheckCallback} uniquenessCheck Callback function to check the uniqueness of the identifier.
- * 
+ *
  * @returns {Promise<string>} A promise that resolves to a unique identifier.
- * 
+ *
  * @throws {Error} If the maximum number of retries is reached without generating a unique identifier.
  */
 export const generateUniqueIdentifier = async (

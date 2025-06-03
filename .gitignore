@@ -1,4 +1,13 @@
+# Build outputs
 dist
+artifact
+artifact.zip
+
+# Dependency directories
 node_modules
+
+# Coverage reports
 .coverage
+
+# Database data
 database/storage

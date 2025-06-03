@@ -1,0 +1,58 @@
+name: Static tests
+description: |
+  This workflow runs static analysis tests such as formatting and linting. This helps 
+  ensure code quality and consistency.
+  It is triggered on every push to branches other than `main` (i.e. any feature branch).
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  formatting:
+    name: Formatting
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start Formatting tests
+        run: npm run test:format
+
+  linting:
+    name: Linting
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start Linting tests
+        run: npm run test:lint
