@@ -1,6 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { environmentVariable } from '../util';
+import { environmentVariable, getResponseHeaders } from '../util';
 import { NotesDataRepository } from '../repository';
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { updateNoteResolver } from '../resolver';
@@ -27,6 +27,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   if (!body.noteId) {
     return {
       statusCode: 400,
+      headers: getResponseHeaders(),
       body: JSON.stringify({
         message: `Field 'noteId' is required`,
       }),
