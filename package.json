@@ -4,9 +4,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "compile": "tsc",
     "clear:deps": "rimraf ./node_modules",
     "clear:dist": "rimraf ./dist",
+    "clear:artifact": "rimraf ./artifact && rimraf ./artifact.zip",
+    "compile": "npm run clear:dist && node compile.js",
+    "package": "npm run clear:artifact && mkdir artifact && cp dist/* artifact/ && cd artifact && zip -r ../artifact.zip .",
     "db:restart": "docker-compose -f ./database/docker-compose.local.yml down && docker-compose -f ./database/docker-compose.local.yml up --build",
     "format": "npx prettier . --write",
     "test:format": "npx prettier . --check",
