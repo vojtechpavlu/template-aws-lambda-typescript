@@ -3,7 +3,6 @@
 This template project is a predefined and pre-configured environment for development of TypeScript-based AWS Lambda functions in a single-artifact nature. There are many tools and helpers set the way I prefer to use to ease the Lambdas development.
 
 **Table of Contents**
-
 - [Project structure](#project-structure)
   - [More on Handlers](#more-on-handlers)
   - [More on Models](#more-on-models)
@@ -15,13 +14,18 @@ This template project is a predefined and pre-configured environment for develop
   - [Linting](#linting)
   - [Functional local testing](#functional-local-testing)
   - [Packaging](#packaging)
+- [Database mock](#database-mock)
+  - [About the mocker](#about-the-mocker)
+  - [Setting up the mock data](#setting-up-the-mock-data)
+  - [Starting up the database](#starting-up-the-database)
+  - [Database Web Client](#database-web-client)
 - [Testing](#testing)
   - [Static tests](#static-tests)
   - [Compilation test](#compilation-test)
   - [Functional tests](#functional-tests)
     - [Unit tests](#unit-tests)
-    - [Resolver tests](#resolver-tests)
     - [Repository tests](#repository-tests)
+    - [Resolver tests](#resolver-tests)
 
 ## Project structure
 
@@ -109,17 +113,17 @@ To make a package (`.zip` archive) of it, you can use `npm run package`. This wi
 
 Keep in mind this process works well to have minimalistic yet effective builds with everything they needs in place - packed together. However, in some cases I found myself in, this might not be sufficient for every use-case. One scenario it fails to satisfy is when you are creating a build with specific sources, like using `argon2` library (with added non-JS implementation) the ESBuild does not understand (and simply skips it). In this case, you must include this library in `node_modules` in the final `artifact.zip`. There might be some other scenarios like this.
 
-### Database mock
+## Database mock
 
 For development and testing purposes, I've decided to use a mock-up local instance of DynamoDB I can easily start using [Docker Compose](https://docs.docker.com/compose/). This enables me to run all the tests, queries and development half-baked implementation as much as I can with minimal overhead.
 
-#### About the mocker
+### About the mocker
 
 The database itself is nice, but without the data, it's basically useless. I've created this simple mocking tool that starts with every startup of Docker Compose setup that clears up the tables and recreates them with fresh data - to enable tests rerun with basically the same environment.
 
 It's simple TypeScript dockerized application being built and executed on every startup and it's only purpose is simply to refresh all the data. To find information more, see `./database/mocker/` contents.
 
-#### Setting up the mock data
+### Setting up the mock data
 
 The mocking itself is performed with two simple ingredients:
 
@@ -134,7 +138,7 @@ In this example data, you can see these files:
   - Table definition (its name, keys, attributes and indexes)
   - Items the table shall contain
 
-#### Starting up the database
+### Starting up the database
 
 To start everything up, you have two options:
 
@@ -142,7 +146,7 @@ To start everything up, you have two options:
 
 - **Start the database, mocker and a [Web Client](#database-web-client)** - This is meant mostly for development purposes, since there is a Web Client UI started up, so on top of the database with fresh data, you get the ability to see and query the data you work with. To trigger this, you need to enter `docker-compose -f docker-compose.local.yml up --build` (with optional `docker-compose -f docker-compose.local.yml down` before).
 
-#### Database Web Client
+### Database Web Client
 
 A minimalistic management visualization console for DynamoDB to access the contents of the tables from your browser. This image is (optionally) started alongside with the database and lets you to see what you are doing with the data in real-time.
 
