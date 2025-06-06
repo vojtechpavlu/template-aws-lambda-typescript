@@ -3,6 +3,7 @@
 This template project is a predefined and pre-configured environment for development of TypeScript-based AWS Lambda functions in a single-artifact nature. There are many tools and helpers set the way I prefer to use to ease the Lambdas development.
 
 **Table of Contents**
+
 - [Project structure](#project-structure)
   - [More on Handlers](#more-on-handlers)
   - [More on Models](#more-on-models)
