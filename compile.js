@@ -16,7 +16,16 @@ fs.readdir(handlersDirectory, (err, files) => {
   for (const handlerFile of handlerFiles) {
     console.log(`Building file: ${handlerFile}`);
 
+    // Construct the absolute path to the handler file being currently compiled
     const absoluteHandlerFile = path.join(handlersDirectory, handlerFile);
+
+    // Construct the destination path for the compiled file
+    // It will be placed in the `./dist` directory with a `.cjs` extension
+    const destinationPath = path.join(
+      import.meta.dirname,
+      'dist',
+      handlerFile.replace(/\.ts$/, '.cjs')
+    );
 
     esbuild.buildSync({
       entryPoints: [absoluteHandlerFile],
@@ -24,7 +33,7 @@ fs.readdir(handlersDirectory, (err, files) => {
       platform: 'node',
       target: 'node20',
       format: 'cjs',
-      outfile: `dist/${absoluteHandlerFile.split('/').pop().replace(/\.ts$/, '.cjs')}`,
+      outfile: destinationPath,
       minify: true,
       treeShaking: true,
       sourcemap: false,
